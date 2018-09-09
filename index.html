@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="never" />
+    <title>Crossword Builder</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="public/style.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script>
+      $(document).ready(function(){
+          var width = 15;
+          var height = 11;
+
+          function reset() {
+            buildCW(parseInt($('#cw-width .select-selected')[0].innerHTML), parseInt($('#cw-height .select-selected')[0].innerHTML));
+          }
+
+          function mirrorSquares(x, y) {
+            width = parseInt($('#cw-width .select-selected')[0].innerHTML);
+            height = parseInt($('#cw-height .select-selected')[0].innerHTML);
+            xPos = width + 1 - x;
+            yPos = height + 1 - y;
+
+            // Mirror x
+            id="#"+xPos+"_"+y;
+            $(id).addClass("dark");
+
+            // Mirror y
+            id="#"+x+"_"+yPos;
+            $(id).addClass("dark");
+
+            // Mirror x and y
+            id="#"+xPos+"_"+yPos;
+            $(id).addClass("dark");
+
+          }
+
+          function buildCW(width, height){
+            console.log('Remove old cross word');
+            $( ".row" ).remove();
+            $( ".row-header-item" ).remove();
+            console.log('Build new crossword. Width:' + width + " Height:" + height)
+
+            for (i = 0; i < height; i++) {
+              heightPercentage = 100/width;
+              rowNum = i+1;
+              $('.row-header').append("<div class='row-header-item' style='height: " + heightPercentage + "%'>" + rowNum + "</div>")
+            }
+
+            for (i = 0; i < width; i++) {
+                colNum = i+1;
+                heightPercentage = 100/width;
+
+                divClass = "row" + colNum;
+                $('.grid-item-container').append("<div class='row row" + colNum + "'></div>")
+                $('.' + divClass).append("<div class='col-header-item'>" + colNum + "</div>")
+                for (j = 0; j < height; j++) {
+                  rowNum = j+1;
+                  $('.' + divClass).append("<div class='grid-item' style='height: " + heightPercentage + "%' id='"+ colNum + "_" + rowNum +"'></div>")
+
+                }
+            }
+
+
+            $('.grid-item').on('click', function() {
+              console.log(this.getAttribute("class"));
+              if(this.getAttribute("class").includes("dark")){
+                $(this).removeClass("dark");
+              } else {
+                $(this).addClass("dark");
+              }
+            })
+          }
+
+          function complete(){
+            // Create and array of dark items
+            theArray = $( ".grid-container" ).find( ".dark");
+
+            $.each( theArray, function( key, value ) {
+              mirrorSquares(this.id.split('_')[0],this.id.split('_')[1]);
+              //console.log(this.id.split('_')[0] );
+            });
+
+
+            //console.log(array[0].id);
+
+            //console.log("complete");
+            // Find all the dark tiles
+            //console.log($( ".grid-container" ).find( ".dark"));
+
+            //console.log($( ".grid-container" ).find( ".dark").length + " selected items.");
+          };
+
+          $('#cw-height .select-items div').on('click', function() {
+            buildCW($('#cw-width .select-selected')[0].innerHTML, this.innerHTML);
+          })
+
+          $('#cw-width .select-items div').on('click', function() {
+            buildCW(this.innerHTML, $('#cw-height .select-selected')[0].innerHTML);
+          })
+
+
+
+          // Set the select box value at the start
+          $("#cw-width").val(width);
+          $("#cw-height").val(height);
+          buildCW(width, height);
+
+          $("button").click(function(){
+              $("#test").hide();
+          });
+
+          $('.printMe').click(function(){
+            window.print();
+          });
+
+          $('.complete').click(function(){
+            complete();
+          });
+
+          $('.reset').click(function(){
+            reset();
+          });
+      });
+
+
+    </script>
+</head>
+<body>
+<div>
+    <div class="header no-print">
+        <h1 class="title">Crossword Builder</h1>
+        <div class="combo-title">Width:</div>
+        <div id="cw-width" class="custom-select" style="width:80px;">
+          <select class="combo">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15" selected="selected">15</option>
+            <option value="16">16</option>
+          </select>
+        </div>
+
+        <div class="combo-title">Height:</div>
+        <div id="cw-height" class="custom-select" style="width:80px;">
+          <select class="combo">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11" selected="selected">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+            <option value="16">16</option>
+          </select>
+        </div>
+
+        <div class="end-buttons">
+          <button class="btn complete">Complete</button>
+          <button class="btn printMe">Print</button>
+          <button class="btn btn-grey reset">Reset</button>
+        </div>
+    </div>
+
+
+    <div class="main">
+      <div class="grid-container">
+        <div class="grid-item-container">
+          <div class="row-header">
+            <div class="row-header-top"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    var x, i, j, selElmnt, a, b, c;
+    /*look for any elements with the class "custom-select":*/
+    x = document.getElementsByClassName("custom-select");
+    for (i = 0; i < x.length; i++) {
+      selElmnt = x[i].getElementsByTagName("select")[0];
+      /*for each element, create a new DIV that will act as the selected item:*/
+      a = document.createElement("DIV");
+      a.setAttribute("class", "select-selected");
+      a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+      x[i].appendChild(a);
+      /*for each element, create a new DIV that will contain the option list:*/
+      b = document.createElement("DIV");
+      b.setAttribute("class", "select-items select-hide");
+      for (j = 1; j < selElmnt.length; j++) {
+        /*for each option in the original select element,
+        create a new DIV that will act as an option item:*/
+        c = document.createElement("DIV");
+        c.innerHTML = selElmnt.options[j].innerHTML;
+        c.addEventListener("click", function(e) {
+            /*when an item is clicked, update the original select box,
+            and the selected item:*/
+            var i, s, h;
+            s = this.parentNode.parentNode.getElementsByTagName("select")[0];
+            h = this.parentNode.previousSibling;
+            for (i = 0; i < s.length; i++) {
+              if (s.options[i].innerHTML == this.innerHTML) {
+                s.selectedIndex = i;
+                h.innerHTML = this.innerHTML;
+                break;
+              }
+            }
+            h.click();
+        });
+        b.appendChild(c);
+      }
+      x[i].appendChild(b);
+      a.addEventListener("click", function(e) {
+          /*when the select box is clicked, close any other select boxes,
+          and open/close the current select box:*/
+          e.stopPropagation();
+          closeAllSelect(this);
+          this.nextSibling.classList.toggle("select-hide");
+          this.classList.toggle("select-arrow-active");
+        });
+    }
+    function closeAllSelect(elmnt) {
+      /*a function that will close all select boxes in the document,
+      except the current select box:*/
+      var x, y, i, arrNo = [];
+      x = document.getElementsByClassName("select-items");
+      y = document.getElementsByClassName("select-selected");
+      for (i = 0; i < y.length; i++) {
+        if (elmnt == y[i]) {
+          arrNo.push(i)
+        } else {
+          y[i].classList.remove("select-arrow-active");
+        }
+      }
+      for (i = 0; i < x.length; i++) {
+        if (arrNo.indexOf(i)) {
+          x[i].classList.add("select-hide");
+        }
+      }
+    }
+    /*if the user clicks anywhere outside the select box,
+    then close all select boxes:*/
+    document.addEventListener("click", closeAllSelect);
+    </script>
+
+</body>
+</html>
